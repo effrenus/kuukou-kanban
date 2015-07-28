@@ -1,0 +1,152 @@
+$cell-bcg = #453D2C
+$letter-color = #FFFE00
+$cell-width = 1.27rem
+
+*
+	margin: 0
+	padding: 0
+
+.board
+	position: fixed
+	width: 100%
+	height: 100%
+	background-color: #000
+	font-family: 'Open Sans Condensed', sans-serif
+	user-select: none
+	cursor: default
+
+	&__header
+		position: relative
+		height: 100px
+		background: linear-gradient(0deg, #303539 0%, #3B424A 50%, #4D5358 100%)
+		color: #EEE
+		border-bottom: 1px solid darken(#4E5357, 30%)
+
+	&__title
+		position: absolute
+		left: 30%
+		top: 5px
+		font-size: 2.2em
+		text-align: center
+
+	&__rows
+		display: table
+		width: 100%
+		box-sizing: border-box
+		border-top: 5px solid #000
+		background-color: #323335
+
+	&__row
+		position: relative
+		display: block
+		border-bottom: 3px solid #020609
+
+	&__time,
+	&__destination,
+	&__flight,
+	&__counter,
+	&__boarding,
+	&__gate
+		display: inline-block
+
+	&__time,
+	&__destination,
+	&__flight,
+	&__counter,
+	&__boarding
+		&:hover
+			position: relative
+
+		&:hover:before
+			content: ''
+			position: absolute
+			z-index: 1
+			width: 6.5em
+			left: 0
+			top: 100%
+			height: 10000px
+			margin-top: 10px
+			background-color: rgba(0, 0, 0, 0.55)
+
+	&__flight
+
+		&:hover:before
+			width: 10.4em
+
+	&__time:hover &__cell
+		z-index: 1
+
+	&__cell
+		position: relative
+		display: inline-block
+		width: $cell-width
+		// padding: 7px 1.5px 5px
+		padding: 7px 0 5px
+		background-color: #323335
+		vertical-align: top
+
+		&:before
+			content: ''
+			position: absolute
+			left: 0
+			right: 0
+			top: 7px
+			height: 3px
+			background: linear-gradient(180deg, #000 0%, transparent 100%)
+			line-height: 0
+			font-size: 0
+
+		&:after
+			content: ''
+			position: absolute
+			left: 0
+			right: 0
+			top: 0px
+			height: 5px
+			background: linear-gradient(180deg, #404541 0%, transparent 100%)
+			line-height: 0
+			font-size: 0
+
+	&__letter
+		display: block
+		width: 0.7em
+		height: 0.9em
+		box-sizing: border-box
+		box-shadow: inset 0 0 2px #000
+		background-color: $cell-bcg
+		font-size: 1.7em
+		line-height: 0.85
+		font-family: 'VT323', sans-serif
+		color: $letter-color
+		text-align: center
+		text-transform: uppercase
+		transition: all 0.2s
+		cursor: pointer
+
+	&__row:hover &__letter
+		background-color: darken($cell-bcg, 80%)
+		color: lighten($letter-color, 80%)
+
+	&__col-title
+		position: absolute
+		bottom: 2px
+		font-size: 1.1rem
+		line-height: 1
+
+	&__col-time
+		left: 0
+
+	&__col-destination
+		left: $cell-width * 6
+
+	&__col-flight
+		left: $cell-width * 12
+
+	&__col-counter
+		left: $cell-width * 21
+
+	&__col-boarding
+		left: $cell-width * 27
+
+	&__col-gate
+		left: $cell-width * 33

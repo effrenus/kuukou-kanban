@@ -1,0 +1,97 @@
+block('board')(
+	tag()('section'),
+
+	elem('col-title').content()(function(){
+		return (typeof this.ctx.content == 'object') ? this.ctx.content.join('<br>') : this.ctx.content;
+	})
+)
+
+block('board').elem('time')(
+	content()(function(){
+		var MAX_LETTERS = 5;
+		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
+		letters.push('');
+
+		return letters.map(function(letter){
+			return {
+				elem: 'cell',
+				content: {elem: 'letter', content: letter}
+			};
+		});
+	})
+)
+
+block('board').elem('destination')(
+	content()(function(){
+		var MAX_LETTERS = 11;
+		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
+		letters.push('');
+
+		return letters.map(function(letter){
+			return {
+				elem: 'cell',
+				content: {elem: 'letter', content: letter}
+			};
+		});
+	})
+)
+
+block('board').elem('flight')(
+	content()(function(){
+		var MAX_LETTERS = 8;
+		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
+		letters.push('');
+
+		return letters.map(function(letter){
+			return {
+				elem: 'cell',
+				content: {elem: 'letter', content: letter}
+			};
+		});
+	})
+)
+
+block('board').elem('counter')(
+	content()(function(){
+		var MAX_LETTERS = 5;
+		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
+		letters.push('');
+
+		return letters.map(function(letter){
+			return {
+				elem: 'cell',
+				content: {elem: 'letter', content: letter}
+			};
+		});
+	})
+)
+
+block('board').elem('boarding')(
+	content()(function(){
+		var MAX_LETTERS = 5;
+		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
+		letters.push('');
+
+		return letters.map(function(letter){
+			return {
+				elem: 'cell',
+				content: {elem: 'letter', content: letter}
+			};
+		});
+	})
+)
+
+block('board').elem('gate')(
+	content()(function(){
+		var MAX_LETTERS = 3;
+		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
+		letters = letters.concat(new Array(MAX_LETTERS - letters.length + 1).join('-').split('-'));
+
+		return letters.map(function(letter){
+			return {
+				elem: 'cell',
+				content: {elem: 'letter', content: letter}
+			};
+		});
+	})
+)
