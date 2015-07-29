@@ -2,89 +2,85 @@ block('board')(
 	tag()('section'),
 
 	elem('col-title').content()(function(){
-		return (typeof this.ctx.content == 'object') ? this.ctx.content.join('<br>') : this.ctx.content;
-	})
+		var content = this.ctx.content;
+
+		if (typeof this.ctx.content === 'object') {
+			content = content.map(function(item, i){
+				return {elem: 'subtitle', mods: {main: (i == content.length - 1)}, content: item};
+			});
+		}
+
+		return content;
+	}),
+
+	elem('label')(
+		tag()('label'),
+
+		attrs()(function() {
+			return {for: this.ctx.for};
+		})
+	),
+
+	elem('checkbox')(
+		tag()('input'),
+
+		attrs()(function() {
+			return {type: 'checkbox', id: this.ctx.name, name: this.ctx.name};
+		})
+	),
+
+	elem('row')(
+		tag()('span'),
+
+		content()(function() {
+			return [
+				{
+					elem: 'label',
+					for: 'row' + this.ctx.num,
+					content: [
+						this.ctx.content,
+						{
+							elem: 'checkbox',
+							name: 'row' + this.ctx.num
+						},
+						{
+							elem: 'description',
+							content: this.ctx.description
+						}
+					]
+				}
+
+			]
+		})
+	),
+
+	elem('letter').tag()('i')
 )
 
-block('board').elem('time')(
+block('board').elemMatch(function(){ return this.elem && this.elem.match(/time|destination|flight|boarding|counter|gate|remarks/); })(
+	tag()('span'),
+
 	content()(function(){
 		var MAX_LETTERS = 5;
-		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
-		letters.push('');
+		switch (this.elem) {
+			case 'time':
+			case 'counter':
+			case 'boarding':
+				MAX_LETTERS = 5;
+				break;
+			case 'destination':
+			case 'remarks':
+				MAX_LETTERS = 11;
+				break;
+			case 'flight':
+				MAX_LETTERS = 8;
+				break;
+			case 'gate':
+			default:
+				MAX_LETTERS = 3;
+		}
 
-		return letters.map(function(letter){
-			return {
-				elem: 'cell',
-				content: {elem: 'letter', content: letter}
-			};
-		});
-	})
-)
-
-block('board').elem('destination')(
-	content()(function(){
-		var MAX_LETTERS = 11;
-		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
-		letters.push('');
-
-		return letters.map(function(letter){
-			return {
-				elem: 'cell',
-				content: {elem: 'letter', content: letter}
-			};
-		});
-	})
-)
-
-block('board').elem('flight')(
-	content()(function(){
-		var MAX_LETTERS = 8;
-		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
-		letters.push('');
-
-		return letters.map(function(letter){
-			return {
-				elem: 'cell',
-				content: {elem: 'letter', content: letter}
-			};
-		});
-	})
-)
-
-block('board').elem('counter')(
-	content()(function(){
-		var MAX_LETTERS = 5;
-		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
-		letters.push('');
-
-		return letters.map(function(letter){
-			return {
-				elem: 'cell',
-				content: {elem: 'letter', content: letter}
-			};
-		});
-	})
-)
-
-block('board').elem('boarding')(
-	content()(function(){
-		var MAX_LETTERS = 5;
-		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
-		letters.push('');
-
-		return letters.map(function(letter){
-			return {
-				elem: 'cell',
-				content: {elem: 'letter', content: letter}
-			};
-		});
-	})
-)
-
-block('board').elem('gate')(
-	content()(function(){
-		var MAX_LETTERS = 3;
-		var letters = this.ctx.content.split('').slice(0, MAX_LETTERS);
+		var letters = String(this.ctx.content).split('').slice(0, MAX_LETTERS);
 		letters = letters.concat(new Array(MAX_LETTERS - letters.length + 1).join('-').split('-'));
 
 		return letters.map(function(letter){
@@ -95,3 +91,4 @@ block('board').elem('gate')(
 		});
 	})
 )
+

@@ -2,14 +2,74 @@ $cell-bcg = #453D2C
 $letter-color = #FFFE00
 $cell-width = 1.27rem
 
+// Board grid data
+$cols =  {
+	name: 'time' 'destination' 'flight' 'counter' 'boarding' 'gate' 'remarks'
+	default: 6 12 9 6 6 4 12
+	w1000: 6 9 9 6 6 4 6
+	w900: 6 8 9 6 6 3 6
+	w800: 6 4 9 6 6 4 4
+}
+
+// Column headers left padding
+column-pads(col_width = $cols.default)
+	s = 0
+	for width, i in col_width
+		&__col-{$cols.name[i]}
+			left: s * $cell-width
+
+		s = s + width
+
+$highlight
+	&:hover:before,
+	&:hover:after
+		content: ''
+		position: absolute
+		z-index: 1
+		height: 10000px
+		background-color: rgba($letter-color, 0.12)
+
+	&:hover:after
+		bottom: 100%
+		margin-bottom: 10px
+
+	&:hover:before
+		top: 100%
+		margin-top: 10px
+
+// Hide board cells depending on viewport width
+cell-hide(col_width = $cols.default)
+	for name, i in $cols.name
+		&__{name} &__cell:nth-child(n+{col_width[i]})
+			display: none
+		&__{name} &__cell:last-child
+			display: inline-block
+
+col-highlight()
+	s = 0
+	for name, i in $cols.name
+		&__{name}
+			@extend $highlight
+
+			&:hover:before,
+			&:hover:after
+				width: $cell-width * $cols.default[i]
+				left: s
+		s = s + $cell-width * $cols.default[i]
+
 *
 	margin: 0
 	padding: 0
+	font-style: normal
+
+body
+	background-color: #000
 
 .board
 	position: fixed
 	width: 100%
-	height: 100%
+	max-width: 1150px
+	overflow: hidden
 	background-color: #000
 	font-family: 'Open Sans Condensed', sans-serif
 	user-select: none
@@ -17,6 +77,7 @@ $cell-width = 1.27rem
 
 	&__header
 		position: relative
+		z-index: 3
 		height: 100px
 		background: linear-gradient(0deg, #303539 0%, #3B424A 50%, #4D5358 100%)
 		color: #EEE
@@ -40,47 +101,48 @@ $cell-width = 1.27rem
 		position: relative
 		display: block
 		border-bottom: 3px solid #020609
+		white-space: nowrap
+
+	&__description
+		display: none
+		padding: 5px 15px 10px
+		white-space: normal
+		font-family: 'Open Sans Condensed', sans-serif
+		text-align: center
+		color: #FFF
+
+	&__checkbox
+		position: absolute
+		left: -1000%
+		visibility: hidden
+
+	&__checkbox:checked+&__description
+		display: block
 
 	&__time,
 	&__destination,
 	&__flight,
 	&__counter,
 	&__boarding,
-	&__gate
+	&__gate,
+	&__remarks
 		display: inline-block
 
-	&__time,
-	&__destination,
-	&__flight,
-	&__counter,
-	&__boarding
-		&:hover
-			position: relative
+	col-highlight()
 
-		&:hover:before
-			content: ''
-			position: absolute
-			z-index: 1
-			width: 6.5em
-			left: 0
-			top: 100%
-			height: 10000px
-			margin-top: 10px
-			background-color: rgba(0, 0, 0, 0.55)
+	@media screen and (max-width: 1000px)
+		cell-hide($cols.w1000)
 
-	&__flight
+	@media screen and (max-width: 900px)
+		cell-hide($cols.w900)
 
-		&:hover:before
-			width: 10.4em
-
-	&__time:hover &__cell
-		z-index: 1
+	@media screen and (max-width: 800px)
+		cell-hide($cols.w800)
 
 	&__cell
 		position: relative
 		display: inline-block
 		width: $cell-width
-		// padding: 7px 1.5px 5px
 		padding: 7px 0 5px
 		background-color: #323335
 		vertical-align: top
@@ -129,24 +191,26 @@ $cell-width = 1.27rem
 
 	&__col-title
 		position: absolute
-		bottom: 2px
+		bottom: 3px
 		font-size: 1.1rem
 		line-height: 1
 
-	&__col-time
-		left: 0
+	column-pads()
 
-	&__col-destination
-		left: $cell-width * 6
+	@media screen and (max-width: 1000px)
+		column-pads($cols.w1000)
 
-	&__col-flight
-		left: $cell-width * 12
+	@media screen and (max-width: 900px)
+		column-pads($cols.w900)
 
-	&__col-counter
-		left: $cell-width * 21
+	@media screen and (max-width: 800px)
+		column-pads($cols.w800)
 
-	&__col-boarding
-		left: $cell-width * 27
+	&__subtitle
+		margin-bottom: 2px
 
-	&__col-gate
-		left: $cell-width * 33
+		&:last-child
+			margin: 0
+
+		&_main
+			color: $letter-color
