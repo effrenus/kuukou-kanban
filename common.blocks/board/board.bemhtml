@@ -40,10 +40,6 @@ block('board')(
 					content: [
 						this.ctx.content,
 						{
-							elem: 'checkbox',
-							name: 'row' + this.ctx.num
-						},
-						{
 							elem: 'description',
 							content: this.ctx.description
 						}

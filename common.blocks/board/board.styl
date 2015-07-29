@@ -16,7 +16,7 @@ column-pads(col_width = $cols.default)
 	s = 0
 	for width, i in col_width
 		&__col-{$cols.name[i]}
-			left: s * $cell-width
+			left: s * $cell-width + 0.2rem
 
 		s = s + width
 
@@ -45,7 +45,7 @@ cell-hide(col_width = $cols.default)
 		&__{name} &__cell:last-child
 			display: inline-block
 
-col-highlight()
+col-highlight(col_width = $cols.default)
 	s = 0
 	for name, i in $cols.name
 		&__{name}
@@ -53,9 +53,9 @@ col-highlight()
 
 			&:hover:before,
 			&:hover:after
-				width: $cell-width * $cols.default[i]
+				width: $cell-width * col_width[i]
 				left: s
-		s = s + $cell-width * $cols.default[i]
+		s = s + $cell-width * col_width[i]
 
 *
 	margin: 0
@@ -67,9 +67,13 @@ body
 
 .board
 	position: fixed
-	width: 100%
-	max-width: 1150px
+	top: 0
+	left: 10px
+	right: 10px
+	max-width: $cell-width * 55
 	overflow: hidden
+	border: 2px solid #323335
+	border-width: 0 2px 0 2px
 	background-color: #000
 	font-family: 'Open Sans Condensed', sans-serif
 	user-select: none
@@ -77,7 +81,7 @@ body
 
 	&__header
 		position: relative
-		z-index: 3
+		z-index: 6
 		height: 100px
 		background: linear-gradient(0deg, #303539 0%, #3B424A 50%, #4D5358 100%)
 		color: #EEE
@@ -103,12 +107,16 @@ body
 		border-bottom: 3px solid #020609
 		white-space: nowrap
 
+		&:last-child
+			border: 0
+
 	&__description
 		display: none
 		padding: 5px 15px 10px
 		white-space: normal
 		font-family: 'Open Sans Condensed', sans-serif
 		text-align: center
+		background-color: #323335
 		color: #FFF
 
 	&__checkbox
@@ -116,7 +124,10 @@ body
 		left: -1000%
 		visibility: hidden
 
-	&__checkbox:checked+&__description
+	&__checkbox:checked+&__row
+		z-index: 5
+
+	&__checkbox:checked+&__row 	&__description
 		display: block
 
 	&__time,
@@ -131,12 +142,15 @@ body
 	col-highlight()
 
 	@media screen and (max-width: 1000px)
+		col-highlight($cols.w1000)
 		cell-hide($cols.w1000)
 
 	@media screen and (max-width: 900px)
+		col-highlight($cols.w900)
 		cell-hide($cols.w900)
 
 	@media screen and (max-width: 800px)
+		col-highlight($cols.w800)
 		cell-hide($cols.w800)
 
 	&__cell
@@ -192,7 +206,7 @@ body
 	&__col-title
 		position: absolute
 		bottom: 3px
-		font-size: 1.1rem
+		font-size: 1rem
 		line-height: 1
 
 	column-pads()
