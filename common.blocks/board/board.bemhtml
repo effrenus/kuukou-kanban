@@ -40,8 +40,9 @@ block('board')(
 					content: [
 						this.ctx.content,
 						{
-							elem: 'description',
-							content: this.ctx.description
+							block: 'flight-details',
+							mix: {block: 'board', elem: 'description'},
+							data: this.ctx.data
 						}
 					]
 				}

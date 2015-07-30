@@ -29,7 +29,7 @@
 						{
 							elem: 'col-title',
 							mix: {elem: 'col-destination'},
-							content: ['Destination', 'Прилет']
+							content: ['Destination', 'Пункт назначения']
 						},
 						{
 							elem: 'col-title',
@@ -76,7 +76,7 @@
 							{
 									elem: 'row',
 									num: i,
-									description: item.description,
+									data: item,
 									content: [
 										{elem: 'time', content: item.time},
 										{elem: 'destination', content: item.destination},

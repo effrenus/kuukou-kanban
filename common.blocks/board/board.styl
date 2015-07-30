@@ -1,6 +1,7 @@
 $cell-bcg = #453D2C
 $letter-color = #FFFE00
 $cell-width = 1.27rem
+$board-max-width = $cell-width * 55
 
 // Board grid data
 $cols =  {
@@ -67,10 +68,10 @@ body
 
 .board
 	position: fixed
-	top: 0
+	top: 20px
 	left: 10px
 	right: 10px
-	max-width: $cell-width * 55
+	max-width: $board-max-width
 	overflow: hidden
 	border: 2px solid #323335
 	border-width: 0 2px 0 2px
@@ -78,6 +79,11 @@ body
 	font-family: 'Open Sans Condensed', sans-serif
 	user-select: none
 	cursor: default
+
+	@media screen and (min-width: $board-max-width)
+		left: 50%
+		right: auto
+		margin-left: - ($board-max-width / 2)
 
 	&__header
 		position: relative
@@ -97,6 +103,7 @@ body
 	&__rows
 		display: table
 		width: 100%
+		overflow: hidden
 		box-sizing: border-box
 		border-top: 5px solid #000
 		background-color: #323335
@@ -115,9 +122,16 @@ body
 		padding: 5px 15px 10px
 		white-space: normal
 		font-family: 'Open Sans Condensed', sans-serif
-		text-align: center
 		background-color: #323335
 		color: #FFF
+		cursor: pointer
+
+		&:before
+			content: '✕'
+			position: absolute
+			right: 7px
+			top: 0
+			font-size: 1.5rem
 
 	&__checkbox
 		position: absolute
@@ -125,10 +139,20 @@ body
 		visibility: hidden
 
 	&__checkbox:checked+&__row
-		z-index: 5
+		z-index: 7
 
 	&__checkbox:checked+&__row 	&__description
+		position: fixed
+		left: 50%
+		top: 50%
 		display: block
+		width: 600px
+		height: 400px
+		margin-left: -250px
+		margin-top: -250px
+		padding: 20px
+		box-sizing: border-box
+		z-index: 8
 
 	&__time,
 	&__destination,
