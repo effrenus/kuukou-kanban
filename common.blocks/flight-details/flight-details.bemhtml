@@ -1,0 +1,17 @@
+block('flight-details')(
+	tag()('span'),
+
+	content()(function() {
+		return Object.keys(this.ctx.data).map(function(name){
+			return {elem: name, mix: {elem: 'row'}, content: this.ctx.data[name]};
+		}.bind(this));
+	}),
+
+	elemMatch(function(){ return this.elem && this.elem.match(/time|destination|flight|boarding|counter|gate|remarks|description/); }).content()(function() {
+		var titles = {time: 'Время вылета', destination: 'Пункт назначения', flight: 'Рейс', boarding: 'Время посадки', counter: 'Стойка регистрации', gate: 'Выход', remarks: 'Примечания', 'description': 'Описание' };
+		return [
+				{elem: 'title', content: titles[this.elem] + ':'},
+				{elem: 'content', content: this.ctx.content}
+		]
+	})
+)
