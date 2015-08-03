@@ -1,5 +1,15 @@
 block('board')(
+
+	js()(true),
+
 	tag()('section'),
+
+	elem('rows').content()(function() {
+		return [
+			{elem: 'checkbox',  name: 'f_delayed', value: 1},
+			this.ctx.content
+		]
+	}),
 
 	elem('col-title').content()(function(){
 		var content = this.ctx.content;
@@ -13,6 +23,8 @@ block('board')(
 		return content;
 	}),
 
+	elem('header').tag()('header'),
+
 	elem('label')(
 		tag()('label'),
 
@@ -25,7 +37,15 @@ block('board')(
 		tag()('input'),
 
 		attrs()(function() {
-			return {type: 'checkbox', id: this.ctx.name, name: this.ctx.name};
+			return {type: 'checkbox', value: (this.ctx.value || ''), id: this.ctx.name, name: this.ctx.name};
+		})
+	),
+
+	elem('radio')(
+		tag()('input'),
+
+		attrs()(function() {
+			return {type: 'radio', value: this.ctx.value, id: (this.ctx.id || this.ctx.name), name: this.ctx.name};
 		})
 	),
 

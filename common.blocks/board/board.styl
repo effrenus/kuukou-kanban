@@ -1,23 +1,30 @@
 $cell-bcg = #453D2C
 $letter-color = #FFFE00
-$cell-width = 1.27rem
-$board-max-width = $cell-width * 55
+$cell-width = 1.53vw
+$cell-width-max = 1.27rem
+$cell-width-min = 0.9rem
+$board-max-width = $cell-width-max * 55
+$header-height = 100px
+$letter-font-size = 2vw
+$letter-font-size-min = 1.2rem
+$letter-font-size-max = 1.7rem
 
 // Board grid data
 $cols =  {
 	name: 'time' 'destination' 'flight' 'counter' 'boarding' 'gate' 'remarks'
 	default: 6 12 9 6 6 4 12
-	w1000: 6 9 9 6 6 4 6
-	w900: 6 8 9 6 6 3 6
-	w800: 6 4 9 6 6 4 4
+	w1000: 6 10 8 6 6 4 12
+	w900: 6 8 8 6 6 4 12
+	w800: 6 6 5 6 6 4 5
 }
 
-// Column headers left padding
-column-pads(col_width = $cols.default)
+// Column headers left padding and width
+column-titles(col_width = $cols.default, cell_width = $cell-width)
 	s = 0
 	for width, i in col_width
 		&__col-{$cols.name[i]}
-			left: s * $cell-width + 0.2rem
+			width: $cell-width * col_width[i]
+			left: s * cell_width + 0.2rem
 
 		s = s + width
 
@@ -46,7 +53,7 @@ cell-hide(col_width = $cols.default)
 		&__{name} &__cell:last-child
 			display: inline-block
 
-col-highlight(col_width = $cols.default)
+col-highlight(col_width = $cols.default, cell_width = $cell-width)
 	s = 0
 	for name, i in $cols.name
 		&__{name}
@@ -54,9 +61,9 @@ col-highlight(col_width = $cols.default)
 
 			&:hover:before,
 			&:hover:after
-				width: $cell-width * col_width[i]
+				width: cell_width * col_width[i]
 				left: s
-		s = s + $cell-width * col_width[i]
+		s = s + cell_width * col_width[i]
 
 *
 	margin: 0
@@ -64,34 +71,51 @@ col-highlight(col_width = $cols.default)
 	font-style: normal
 
 body
+	padding-left: 20px
+	padding-right: 20px
+	height: 5000px
 	background-color: #000
 
 .board
-	position: fixed
-	top: 20px
-	left: 10px
-	right: 10px
+	position: relative
+	display: inline-block
 	max-width: $board-max-width
-	overflow: hidden
-	border: 2px solid #323335
-	border-width: 0 2px 0 2px
+	padding-top: $header-height
 	background-color: #000
 	font-family: 'Open Sans Condensed', sans-serif
 	user-select: none
 	cursor: default
+
+	&_sticky
+		padding-top: 0
 
 	@media screen and (min-width: $board-max-width)
 		left: 50%
 		right: auto
 		margin-left: - ($board-max-width / 2)
 
+	// sticky work only in FF
+	// in Chrome temp disabled due spec inconsistency
 	&__header
-		position: relative
+		position: absolute
+		position: sticky
+		top: 0
+		left: 0
 		z-index: 6
-		height: 100px
+		width: 100%
+		height: $header-height
+		box-sizing: border-box
+		border-bottom: 1px solid darken(#4E5357, 30%)
+		border-radius: 3px 3px 0 0
 		background: linear-gradient(0deg, #303539 0%, #3B424A 50%, #4D5358 100%)
 		color: #EEE
-		border-bottom: 1px solid darken(#4E5357, 30%)
+
+		&_pos_fixed
+			position: fixed
+			top: 0
+
+		&_pos_rel
+			left: 0!important
 
 	&__title
 		position: absolute
@@ -99,6 +123,17 @@ body
 		top: 5px
 		font-size: 2.2em
 		text-align: center
+
+		&:before
+			content: ''
+			position: absolute
+			left: -60px
+			top: 0
+			width: 45px
+			height: 45px
+			background: url(../../images/departure_icon.png) 50% 50% no-repeat
+			background-size: contain
+			opacity: 0.85
 
 	&__rows
 		display: table
@@ -117,6 +152,12 @@ body
 		&:last-child
 			border: 0
 
+	&__checkbox[name="f_delayed"][value="1"]:checked ~ &__row
+		display: none
+
+	&__checkbox[name="f_delayed"][value="1"]:checked ~ &__row_active
+		display: block
+
 	&__description
 		display: none
 		padding: 5px 15px 10px
@@ -127,7 +168,7 @@ body
 		cursor: pointer
 
 		&:before
-			content: '✕'
+			content: '×'
 			position: absolute
 			right: 7px
 			top: 0
@@ -162,8 +203,12 @@ body
 	&__gate,
 	&__remarks
 		display: inline-block
+		vertical-align: top
 
 	col-highlight()
+
+	@media screen and (min-width: 1200px)
+		col-highlight($cols.default, $cell-width-max)
 
 	@media screen and (max-width: 1000px)
 		col-highlight($cols.w1000)
@@ -174,7 +219,7 @@ body
 		cell-hide($cols.w900)
 
 	@media screen and (max-width: 800px)
-		col-highlight($cols.w800)
+		col-highlight($cols.w800, $cell-width-min)
 		cell-hide($cols.w800)
 
 	&__cell
@@ -207,6 +252,12 @@ body
 			line-height: 0
 			font-size: 0
 
+		@media screen and (min-width: 1200px)
+			width: $cell-width-max
+
+		@media screen and (max-width: 800px)
+			width: $cell-width-min
+
 	&__letter
 		display: block
 		width: 0.7em
@@ -214,7 +265,7 @@ body
 		box-sizing: border-box
 		box-shadow: inset 0 0 2px #000
 		background-color: $cell-bcg
-		font-size: 1.7em
+		font-size: $letter-font-size //1.7em
 		line-height: 0.85
 		font-family: 'VT323', sans-serif
 		color: $letter-color
@@ -222,6 +273,15 @@ body
 		text-transform: uppercase
 		transition: all 0.2s
 		cursor: pointer
+
+		@media screen and (min-width: 1200px)
+			font-size: $letter-font-size-max
+
+		@media screen and (max-width: 1000px)
+			font-size: $letter-font-size-min
+
+	&__row:nth-of-type(odd) &__letter
+		background-color: darken($cell-bcg, 40%)
 
 	&__row:hover &__letter
 		background-color: darken($cell-bcg, 80%)
@@ -233,22 +293,35 @@ body
 		font-size: 1rem
 		line-height: 1
 
-	column-pads()
+	column-titles()
+
+	@media screen and (min-width: 1200px)
+		column-titles($cols.default, $cell-width-max)
 
 	@media screen and (max-width: 1000px)
-		column-pads($cols.w1000)
+		column-titles($cols.w1000)
 
 	@media screen and (max-width: 900px)
-		column-pads($cols.w900)
+		column-titles($cols.w900)
 
 	@media screen and (max-width: 800px)
-		column-pads($cols.w800)
+		column-titles($cols.w800, $cell-width-min)
 
 	&__subtitle
 		margin-bottom: 2px
+		overflow: hidden
+		text-overflow: ellipsis
+		white-space: nowrap
 
 		&:last-child
 			margin: 0
 
 		&_main
 			color: $letter-color
+
+	&__btn-boarding
+		position: absolute
+		right: 5px
+		top: 0
+		padding: 3px 5px
+		cursor: pointer
