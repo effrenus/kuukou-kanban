@@ -1,4 +1,4 @@
-modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
+modules.define('board', ['i-bem__dom', 'functions__debounce'], function(provide, BEMDOM, debounce){
 
 	provide(BEMDOM.decl(this.name, {
 
@@ -9,10 +9,9 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 					if (this.isStickySupported()) {
 						return;
 					}
-					this.setMod('sticky', false);
 
 					// must be scroll proxy
-					this.bindToWin('scroll', this._onScroll.bind(this), false);
+					this.bindToWin('scroll', debounce(this._onScroll.bind(this), 15), false);
 					this.bindToWin('resize', this._onResize.bind(this), false);
 
 					this._onResize();
@@ -45,9 +44,11 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 
 			if(scrollTop > (this._offset.top) && scrollTop < (this._offset.top + this._geom.h - this._head.h)) {
 				this.setMod(header, 'pos', 'fixed');
+				this.setMod('padding', true);
 			}
 			else {
 				this.setMod(header, 'pos', 'rel');
+				this.setMod('padding', false);
 			}
 		}
 

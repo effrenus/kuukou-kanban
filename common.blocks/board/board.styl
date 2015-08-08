@@ -65,39 +65,23 @@ col-highlight(col_width = $cols.default, cell_width = $cell-width)
 				left: s
 		s = s + cell_width * col_width[i]
 
-*
-	margin: 0
-	padding: 0
-	font-style: normal
-
-body
-	padding-left: 20px
-	padding-right: 20px
-	height: 5000px
-	background-color: #000
-
 .board
 	position: relative
 	display: inline-block
 	max-width: $board-max-width
-	padding-top: $header-height
 	background-color: #000
 	font-family: 'Open Sans Condensed', sans-serif
 	user-select: none
 	cursor: default
+	text-align: left
 
-	&_sticky
-		padding-top: 0
-
-	@media screen and (min-width: $board-max-width)
-		left: 50%
-		right: auto
-		margin-left: - ($board-max-width / 2)
+	&_padding
+		padding-top: $header-height
 
 	// sticky work only in FF
 	// in Chrome temp disabled due spec inconsistency
 	&__header
-		position: absolute
+		position: relative
 		position: sticky
 		top: 0
 		left: 0
@@ -181,6 +165,7 @@ body
 
 	&__checkbox:checked+&__row
 		z-index: 7
+		pointer-events: none
 
 	&__checkbox:checked+&__row 	&__description
 		position: fixed
@@ -194,6 +179,7 @@ body
 		padding: 20px
 		box-sizing: border-box
 		z-index: 8
+		pointer-events: auto
 
 	&__time,
 	&__destination,

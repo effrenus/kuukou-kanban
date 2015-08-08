@@ -1,3 +1,3 @@
 ({
-	shouldDeps: {block: 'flight-details'}
+	shouldDeps: [{block: 'flight-details'}, {block: 'functions', elem: 'debounce'}]
 })
