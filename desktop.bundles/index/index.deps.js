@@ -50,10 +50,6 @@ exports.deps = [
     },
     {
         "block": "i-bem",
-        "mod": "init"
-    },
-    {
-        "block": "i-bem",
         "elem": "dom",
         "mod": "init"
     },
@@ -76,8 +72,8 @@ exports.deps = [
         "block": "flight-details"
     },
     {
-        "block": "board",
-        "mod": "sticky"
+        "block": "functions",
+        "elem": "debounce"
     },
     {
         "block": "board",
@@ -146,11 +142,6 @@ exports.deps = [
     },
     {
         "block": "board",
-        "elem": "row",
-        "mod": "active"
-    },
-    {
-        "block": "board",
         "elem": "time"
     },
     {
@@ -178,6 +169,11 @@ exports.deps = [
         "elem": "remarks"
     },
     {
+        "block": "board",
+        "elem": "row",
+        "mod": "active"
+    },
+    {
         "block": "page"
     },
     {
@@ -192,9 +188,8 @@ exports.deps = [
         "val": "js"
     },
     {
-        "block": "board",
-        "mod": "sticky",
-        "val": true
+        "block": "page",
+        "mod": "tall"
     },
     {
         "block": "board",
@@ -206,6 +201,11 @@ exports.deps = [
         "block": "board",
         "elem": "row",
         "mod": "active",
+        "val": true
+    },
+    {
+        "block": "page",
+        "mod": "tall",
         "val": true
     }
 ];

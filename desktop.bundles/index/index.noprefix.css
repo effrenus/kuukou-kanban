@@ -39,43 +39,24 @@
   top: 100%;
   margin-top: 10px;
 }
-* {
-  margin: 0;
-  padding: 0;
-  font-style: normal;
-}
-body {
-  padding-left: 20px;
-  padding-right: 20px;
-  height: 5000px;
-  background-color: #000;
-}
 .board {
   position: relative;
   display: inline-block;
-  max-width: 69.85rem;
   padding-top: 100px;
+  max-width: 69.85rem;
   background-color: #000;
   font-family: 'Open Sans Condensed', sans-serif;
   user-select: none;
   cursor: default;
+  text-align: left;
 }
 .board_sticky {
   padding-top: 0;
 }
-@media screen and (min-width: 69.85rem) {
-  .board {
-    left: 50%;
-    right: auto;
-    margin-left: -34.925rem;
-  }
-}
 .board__header {
   position: absolute;
-  position: sticky;
-  top: 0;
-  left: 0;
   z-index: 6;
+  top: 0;
   width: 100%;
   height: 100px;
   box-sizing: border-box;
@@ -84,12 +65,11 @@ body {
   background: linear-gradient(0deg, #303539 0%, #3b424a 50%, #4d5358 100%);
   color: #eee;
 }
-.board__header_pos_fixed {
+.board__header_fixed {
   position: fixed;
-  top: 0;
 }
-.board__header_pos_rel {
-  left: 0 !important;
+.board_sticky .board__header {
+  position: sticky;
 }
 .board__title {
   position: absolute;
@@ -122,6 +102,10 @@ body {
   display: block;
   border-bottom: 3px solid #020609;
   white-space: nowrap;
+  opacity: 1;
+}
+.board__row:hover {
+  z-index: 2;
 }
 .board__row:last-child {
   border: 0;
@@ -141,33 +125,27 @@ body {
   color: #fff;
   cursor: pointer;
 }
-.board__description:before {
-  content: '×';
-  position: absolute;
-  right: 7px;
-  top: 0;
-  font-size: 1.5rem;
-}
 .board__checkbox {
   position: absolute;
   left: -1000%;
   visibility: hidden;
 }
 .board__checkbox:checked+.board__row {
-  z-index: 7;
+  z-index: 5;
+  pointer-events: none;
 }
 .board__checkbox:checked+.board__row .board__description {
   position: fixed;
   left: 50%;
-  top: 50%;
+  top: 120px;
   display: block;
-  width: 600px;
-  height: 400px;
-  margin-left: -250px;
-  margin-top: -250px;
+  width: 70%;
+  min-height: 400px;
+  transform: translate(-50%);
   padding: 20px;
   box-sizing: border-box;
-  z-index: 8;
+  z-index: 9;
+  pointer-events: auto;
 }
 .board__time,
 .board__destination,
@@ -736,6 +714,17 @@ body {
 }
 /* ../../common.blocks/board/board.styl:end */
 /* ../../common.blocks/flight-details/flight-details.styl:begin */
+.flight-details {
+  box-shadow: 0 0 15px #d9d800;
+}
+.flight-details:before {
+  content: '×';
+  position: absolute;
+  right: 10px;
+  top: 0;
+  font-size: 2.5rem;
+  line-height: 1;
+}
 .flight-details__row {
   margin-bottom: 10px;
 }
@@ -748,3 +737,26 @@ body {
   display: inline-block;
 }
 /* ../../common.blocks/flight-details/flight-details.styl:end */
+/* ../../desktop.blocks/page/page.styl:begin */
+* {
+  margin: 0;
+  padding: 0;
+  font-style: normal;
+}
+.page {
+  padding-top: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #000;
+  text-align: center;
+}
+@media screen and (max-width: 1000px) {
+  .page {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+.page_tall {
+  min-height: 1500px;
+}
+/* ../../desktop.blocks/page/page.styl:end */

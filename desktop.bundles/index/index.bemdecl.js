@@ -4,6 +4,19 @@ exports.blocks = [
     },
     {
         "name": "page",
+        "mods": [
+            {
+                "name": "tall",
+                "vals": [
+                    {
+                        "name": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "name": "page",
         "elems": [
             {
                 "name": "meta"
@@ -28,19 +41,6 @@ exports.blocks = [
     },
     {
         "name": "board"
-    },
-    {
-        "name": "board",
-        "mods": [
-            {
-                "name": "sticky",
-                "vals": [
-                    {
-                        "name": true
-                    }
-                ]
-            }
-        ]
     },
     {
         "name": "board",
@@ -187,12 +187,7 @@ exports.blocks = [
                 "name": "row",
                 "mods": [
                     {
-                        "name": "active",
-                        "vals": [
-                            {
-                                "name": true
-                            }
-                        ]
+                        "name": "active"
                     }
                 ]
             }
@@ -261,7 +256,12 @@ exports.blocks = [
                 "name": "row",
                 "mods": [
                     {
-                        "name": "active"
+                        "name": "active",
+                        "vals": [
+                            {
+                                "name": true
+                            }
+                        ]
                     }
                 ]
             }

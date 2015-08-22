@@ -343,7 +343,7 @@ var BEM = inherit(events.Emitter, /** @lends BEM.prototype */ {
      * Returns the value of the modifier of the block/nested element
      * @param {Object} [elem] Nested element
      * @param {String} modName Modifier name
-     * @returns {String} Modifier value
+     * @returns {String|Boolean} Modifier value
      */
     getMod : function(elem, modName) {
         var type = typeof elem;
@@ -1382,13 +1382,13 @@ var undef,
         __constructor : function(type, target) {
             /**
              * Type
-             * @member {String} Event
+             * @member {String}
              */
             this.type = type;
 
             /**
              * Target
-             * @member {String} Event
+             * @member {Object}
              */
             this.target = target;
 
@@ -1626,6 +1626,49 @@ provide({
 });
 
 /* end: ../../libs/bem-core/common.blocks/events/events.vanilla.js */
+/* begin: ../../libs/bem-core/common.blocks/functions/__debounce/functions__debounce.vanilla.js */
+/**
+ * @module functions__debounce
+ */
+
+modules.define('functions__debounce', function(provide) {
+
+var global = this.global;
+
+provide(
+    /**
+     * Debounces given function
+     * @exports
+     * @param {Function} fn function to debounce
+     * @param {Number} timeout debounce interval
+     * @param {Boolean} [invokeAsap=false] invoke before first interval
+     * @param {Object} [ctx] context of function invocation
+     * @returns {Function} debounced function
+     */
+    function(fn, timeout, invokeAsap, ctx) {
+        if(arguments.length === 3 && typeof invokeAsap !== 'boolean') {
+            ctx = invokeAsap;
+            invokeAsap = false;
+        }
+
+        var timer;
+        return function() {
+            var args = arguments;
+            ctx || (ctx = this);
+
+            invokeAsap && !timer && fn.apply(ctx, args);
+
+            global.clearTimeout(timer);
+
+            timer = global.setTimeout(function() {
+                invokeAsap || fn.apply(ctx, args);
+                timer = null;
+            }, timeout);
+        };
+    });
+});
+
+/* end: ../../libs/bem-core/common.blocks/functions/__debounce/functions__debounce.vanilla.js */
 /* begin: ../../libs/bem-core/common.blocks/i-bem/__dom/i-bem__dom.js */
 /**
  * @module i-bem__dom
@@ -2327,7 +2370,7 @@ DOM = BEM.decl('i-bem__dom',/** @lends BEMDOM.prototype */{
 
                 (oldModVal === true?
                     classRE.test(className) :
-                    className.indexOf(classPrefix + MOD_DELIM) > -1)?
+                    (' ' + className).indexOf(' ' + classPrefix + MOD_DELIM) > -1)?
                         this.className = className.replace(
                             classRE,
                             (needDel? '' : '$1' + modClassName)) :
@@ -2365,12 +2408,24 @@ DOM = BEM.decl('i-bem__dom',/** @lends BEMDOM.prototype */{
             modName = undef;
         }
 
+        names = names.split(' ');
+
         var _self = this.__self,
-            selector = '.' +
-                names.split(' ').map(function(name) {
-                    return _self.buildClass(name, modName, modVal);
-                }).join(',.'),
-            res = findDomElem(ctx, selector);
+            modPostfix = buildModPostfix(modName, modVal),
+            selectors = [],
+            keys = names.map(function(name) {
+                selectors.push(_self.buildSelector(name, modName, modVal));
+                return name + modPostfix;
+            }),
+            isSingleName = keys.length === 1,
+            res = findDomElem(ctx, selectors.join(','));
+
+        // caching results if possible
+        ctx === this.domElem &&
+            selectors.forEach(function(selector, i) {
+                (this._elemCache[keys[i]] = isSingleName? res : res.filter(selector))
+                    .__bemElemName = names[i];
+            }, this);
 
         return strictMode? this._filterFindElemResults(res) : res;
     },
@@ -2397,15 +2452,8 @@ DOM = BEM.decl('i-bem__dom',/** @lends BEMDOM.prototype */{
      * @returns {jQuery} DOM elements
      */
     _elem : function(name, modName, modVal) {
-        var key = name + buildModPostfix(modName, modVal),
-            res;
-
-        if(!(res = this._elemCache[key])) {
-            res = this._elemCache[key] = this.findElem(name, modName, modVal);
-            res.__bemElemName = name;
-        }
-
-        return res;
+        return this._elemCache[name + buildModPostfix(modName, modVal)] ||
+            this.findElem(name, modName, modVal);
     },
 
     /**
@@ -2609,18 +2657,19 @@ DOM = BEM.decl('i-bem__dom',/** @lends BEMDOM.prototype */{
     },
 
     /**
-     * Destroys blocks on a fragment of the DOM tree
      * @param {jQuery} ctx Root DOM node
      * @param {Boolean} [excludeSelf=false] Exclude the main domElem
+     * @param {Boolean} [destructDom=false] Remove DOM node during destruction
+     * @private
      */
-    destruct : function(ctx, excludeSelf) {
+    _destruct : function(ctx, excludeSelf, destructDom) {
         var _ctx;
         if(excludeSelf) {
             storeDomNodeParents(_ctx = ctx.children());
-            ctx.empty();
+            destructDom && ctx.empty();
         } else {
             storeDomNodeParents(_ctx = ctx);
-            ctx.remove();
+            destructDom && ctx.remove();
         }
 
         reverse.call(findDomElem(_ctx, BEM_SELECTOR)).each(function(_, domNode) {
@@ -2635,9 +2684,24 @@ DOM = BEM.decl('i-bem__dom',/** @lends BEMDOM.prototype */{
             });
             delete domElemToParams[identify(domNode)];
         });
+    },
 
-        // flush parent nodes storage that has been filled above
-        domNodesToParents = {};
+    /**
+     * Destroys blocks on a fragment of the DOM tree
+     * @param {jQuery} ctx Root DOM node
+     * @param {Boolean} [excludeSelf=false] Exclude the main domElem
+     */
+    destruct : function(ctx, excludeSelf) {
+        this._destruct(ctx, excludeSelf, true);
+    },
+
+    /**
+     * Detaches blocks on a fragment of the DOM tree without destructing DOM tree
+     * @param {jQuery} ctx Root DOM node
+     * @param {Boolean} [excludeSelf=false] Exclude the main domElem
+     */
+    detach : function(ctx, excludeSelf) {
+        this._destruct(ctx, excludeSelf);
     },
 
     /**
@@ -3191,8 +3255,9 @@ modules.define('jquery__config', function(provide) {
 provide(/** @exports */{
     /**
      * URL for loading jQuery if it does not exist
+     * @type {String}
      */
-    url : '//yastatic.net/jquery/2.1.3/jquery.min.js'
+    url : '//yastatic.net/jquery/2.1.4/jquery.min.js'
 });
 
 });
@@ -3214,7 +3279,7 @@ provide(
         objects.extend(
             base,
             {
-                url : '//yastatic.net/jquery/1.11.2/jquery.min.js'
+                url : '//yastatic.net/jquery/1.11.3/jquery.min.js'
             }) :
         base);
 
@@ -3387,7 +3452,7 @@ provide(
 
 /* end: ../../libs/bem-core/common.blocks/i-bem/__dom/_init/i-bem__dom_init.js */
 /* begin: ../../common.blocks/board/board.js */
-modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
+modules.define('board', ['i-bem__dom', 'functions__debounce'], function(provide, BEMDOM, debounce){
 
 	provide(BEMDOM.decl(this.name, {
 
@@ -3396,12 +3461,12 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 			js: {
 				inited: function(){
 					if (this.isStickySupported()) {
+						this.setMod('sticky', true);
 						return;
 					}
-					this.setMod('sticky', false);
 
 					// must be scroll proxy
-					this.bindToWin('scroll', this._onScroll.bind(this), false);
+					this.bindToWin('scroll', debounce(this._onScroll.bind(this), 0), false);
 					this.bindToWin('resize', this._onResize.bind(this), false);
 
 					this._onResize();
@@ -3412,9 +3477,13 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 		},
 
 		isStickySupported: function() {
+			var prefixes = ['', '-webkit-', '-ms-', '-moz-', '-o-'];
 			var el = document.createElement('div');
-			el.style.position = 'sticky';
-			return el.style.position !== '';
+
+			return prefixes.some(function checkPropSupport(prefix) {
+				el.style.position = prefix + 'sticky';
+				return el.style.position !== '';
+			});
 		},
 
 		_onResize: function() {
@@ -3423,8 +3492,7 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 			this._offset = this.domElem.offset();
 
 			this.elem('header').css({
-				width: this._geom.w,
-				left: this._offset.left
+				width: this._geom.w
 			});
 		},
 
@@ -3433,13 +3501,12 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 			var header = this.elem('header');
 
 			if(scrollTop > (this._offset.top) && scrollTop < (this._offset.top + this._geom.h - this._head.h)) {
-				this.setMod(header, 'pos', 'fixed');
+				this.setMod(header, 'fixed', true);
 			}
 			else {
-				this.setMod(header, 'pos', 'rel');
+				this.setMod(header, 'fixed', false);
 			}
 		}
-
 
 	}));
 });
