@@ -8,8 +8,8 @@
 		{ elem : 'meta', attrs : { name : 'viewport', content : 'width=device-width, initial-scale=1' } },
 		{ elem : 'css', url : 'http://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700&subset=latin,cyrillic' },
 		{ elem : 'css', url : 'http://fonts.googleapis.com/css?family=VT323' },
-		{ elem : 'css', url : './_index.css' },
-		{ elem : 'js', url : './_index.js' }
+		{ elem : 'css', url : './index.css' },
+		{ elem : 'js', url : './index.js' }
 	],
 	content : [
 		{
