@@ -1,4 +1,4 @@
-modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
+modules.define('board', ['i-bem__dom', 'functions__debounce'], function(provide, BEMDOM, debounce){
 
 	provide(BEMDOM.decl(this.name, {
 
@@ -7,12 +7,12 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 			js: {
 				inited: function(){
 					if (this.isStickySupported()) {
+						this.setMod('sticky', true);
 						return;
 					}
-					this.setMod('sticky', false);
 
 					// must be scroll proxy
-					this.bindToWin('scroll', this._onScroll.bind(this), false);
+					this.bindToWin('scroll', debounce(this._onScroll.bind(this), 0), false);
 					this.bindToWin('resize', this._onResize.bind(this), false);
 
 					this._onResize();
@@ -23,9 +23,13 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 		},
 
 		isStickySupported: function() {
+			var prefixes = ['', '-webkit-', '-ms-', '-moz-', '-o-'];
 			var el = document.createElement('div');
-			el.style.position = 'sticky';
-			return el.style.position !== '';
+
+			return prefixes.some(function checkPropSupport(prefix) {
+				el.style.position = prefix + 'sticky';
+				return el.style.position !== '';
+			});
 		},
 
 		_onResize: function() {
@@ -34,8 +38,7 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 			this._offset = this.domElem.offset();
 
 			this.elem('header').css({
-				width: this._geom.w,
-				left: this._offset.left
+				width: this._geom.w
 			});
 		},
 
@@ -44,13 +47,12 @@ modules.define('board', ['i-bem__dom'], function(provide, BEMDOM){
 			var header = this.elem('header');
 
 			if(scrollTop > (this._offset.top) && scrollTop < (this._offset.top + this._geom.h - this._head.h)) {
-				this.setMod(header, 'pos', 'fixed');
+				this.setMod(header, 'fixed', true);
 			}
 			else {
-				this.setMod(header, 'pos', 'rel');
+				this.setMod(header, 'fixed', false);
 			}
 		}
-
 
 	}));
 });
